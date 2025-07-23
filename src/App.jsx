@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-  import Header from './components/Header';
-    import Stats from './components/Stats';
-    import SearchBar from './components/SearchBar';
-import Filters from './components/Filters';
-import SpaceList from './components/SpaceList';
-  import Footer from './components/Footer';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Dashboard from './components/Dashboard';
+    import DetailView from './components/DetailView';
+import Sidebar from './components/Sidebar';
 import { categorizeMedia } from './utils/helpers';
 
 function App() {
@@ -76,34 +76,44 @@ function App() {
            });
 
   return (
-    <div className="app">
-      <Header />
-      
-      <main className="container">
-        {loading ? (
-          <div className="loading">Loading space data...</div>
-                ) : error ? (
-          <div className="error">Error: {error}</div>
-            ) : (
-          <>
-            <Stats spaceData={spaceData} />
-            
-      <div className="dashboardControls">
-              <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-                    <Filters 
-                dateFilter={dateFilter} 
-                setDateFilter={setDateFilter}
-                categoryFilter={categoryFilter}
+    <Router>
+      <div className="app">
+        <Header />
+        
+        <div className="mainLayout">
+          <Sidebar />
+          
+          <main className="container">
+            <Routes>
+              <Route 
+                path="/" 
+                element={
+                  <Dashboard 
+                    spaceData={spaceData}
+                    loading={loading}
+                    error={error}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    dateFilter={dateFilter}
+                    setDateFilter={setDateFilter}
+                    categoryFilter={categoryFilter}
                     setCategoryFilter={setCategoryFilter}
+                    filteredData={filteredData}
+                  />
+                } 
               />
-            </div>
-            
-            <SpaceList filteredData={filteredData} />
-          </>
-        )}
-             </main>
-      
-      <Footer />
-    </div>);}
+              <Route 
+                path="/detail/:id" 
+                element={<DetailView spaceData={spaceData} />} 
+              />
+            </Routes>
+              </main>
+        </div>
+        
+        <Footer />
+      </div>
+           </Router>
+  );
+}
 
      export default App;
